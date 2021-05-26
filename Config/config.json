@@ -1,0 +1,20 @@
+{
+    "binance": {
+        "enabled": true,
+        "interval": 0.0333
+    },
+    "hwinfo": {
+        "enabled": true,
+        "interval": 0.0167
+    },
+    "nicehash": {
+        "enabled": false,
+        "interval": 1
+    },
+    "afterburner": {
+        "enabled": false
+    },
+    "postgre": {
+        "connectionstring": "$POSTGRESQL_CONNECTION_STRING"
+    }
+}
