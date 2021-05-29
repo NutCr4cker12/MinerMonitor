@@ -3,6 +3,14 @@
         "enabled": false,
         "interval": 0.0333
     },
+    "hwinfoExe": {
+        "name": "HWinfo.EXE",
+        "cmd": "C:\\Programs\\HWiNFO64\\HWiNFO64.EXE"
+    },
+    "afterburner": {
+        "name": "AfterBurner",
+        "cmd": "C:\\Programs\\MSI Afterburner\\MSIAfterburner.exe"
+    },
     "hwinfo": {
         "enabled": true,
         "cmd": "C:\\Programs\\HWiNFO64\\HWiNFO64.EXE",
@@ -106,9 +114,6 @@
     "nicehash": {
         "enabled": false,
         "interval": 1
-    },
-    "afterburner": {
-        "enabled": false
     },
     "postgre": {
         "connectionstring": "$POSTGRESQL_CONNECTION_STRING"
