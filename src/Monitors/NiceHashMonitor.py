@@ -1,10 +1,16 @@
-from .MonitorBase import MonitorBase
+from threading import Thread, Timer
 
-class NiceHashMonitor(MonitorBase):
+class NiceHashMonitor(Thread):
 
     def __init__(self, options, db):
-        super().__init__(options, "NiceHash")
+        Thread.__init__(self, name="NiceHash")
         self.db = db
 
     def run(self):
+        pass
+
+    def get_data(self):
+        pass
+
+    def post_data(self):
         pass

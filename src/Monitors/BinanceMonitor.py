@@ -4,6 +4,7 @@ import pandas as pd
 import datetime as dt
 import matplotlib.pyplot as plt
 import time
+from threading import Thread, Timer
 from .MonitorBase import MonitorBase
 
 def get_price(symbol: str = "BTCEUR", startTime: dt.datetime = dt.datetime.utcnow() - dt.timedelta(hours=1), endTime : dt.datetime = dt.datetime.utcnow(), interval = "1h"):
@@ -24,13 +25,22 @@ def get_price(symbol: str = "BTCEUR", startTime: dt.datetime = dt.datetime.utcno
     return df["price"].mean()
     
 
-class BinanceMonitor(MonitorBase):
+class BinanceMonitor(Thread):
 
-    def __init__(self, options, db, name):
-        super().__init__(options, "Binance" + name)
+    def __init__(self, options, db):
+        Thread.__init__(self, name="Binance")
         self.db = db
         self.interval = options.interval * 60
-        self.index = 0
+        self._running = True
+
+    def run(self):
+        while self._running:
+            timer = Timer(self.interval, self.get_data)
+            timer.start()
+            timer.join()
+
+    def kill(self):
+        self._running = False
 
     def get_data(self):
         print(f"Thread {self.name} : {self.index} \n")
