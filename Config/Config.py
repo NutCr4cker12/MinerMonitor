@@ -28,9 +28,6 @@ class PyJSON():
                 d[k] = v.to_json()
         return d
 
-    def eval(self, img):
-        raise NotImplementedError
-
     def __repr__(self):
         return json.dumps(self.to_json(), indent=2)
 
@@ -38,6 +35,6 @@ class Config(PyJSON):
 
     def __init__(self, production: bool = False):
         load_env(production=production)
-        with open("Config\config.json") as config_file:
+        with open("Config/config.json") as config_file:
             options = json.load(config_file)
         super().__init__(options)

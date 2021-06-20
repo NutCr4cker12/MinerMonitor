@@ -1,1 +1,1 @@
-from .MonitorManager import MonitorManager
+from .NiceHash import *

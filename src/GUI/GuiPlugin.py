@@ -1,11 +1,7 @@
 from threading import Timer
 from PyQt5.QtWidgets import (
     QLabel,
-    QWidget,
-    QPushButton,
-    QVBoxLayout,
-    QHBoxLayout,
-    QGridLayout
+    QPushButton
 )
 
 class GuiPlugin:
@@ -21,14 +17,18 @@ class GuiPlugin:
         self.label = QLabel(self.name)
         self.action_button = QPushButton("")
         self.action_button.clicked.connect(self.toggle_run)
+        self.foreground_button = QPushButton("Show")
+        self.foreground_button.clicked.connect(self.set_foreground)
         self.status_label = QLabel("")
 
+        self.plugin.update_callback = self.update_status
         self.update_status()
 
     def add_gui_row(self):
         self.parent.layout.addWidget(self.label, self.row, 0)
         self.parent.layout.addWidget(self.action_button, self.row, 1)
-        self.parent.layout.addWidget(self.status_label, self.row, 2)
+        self.parent.layout.addWidget(self.foreground_button, self.row, 2)
+        self.parent.layout.addWidget(self.status_label, self.row, 3)
 
     def update_status(self):
         print(f"{self.name} - Updating status")
@@ -45,6 +45,10 @@ class GuiPlugin:
         else:
             self.start()
 
+    def set_foreground(self):
+        self.plugin.set_foreground()
+        self.update_status()
+
     def start(self):
         print(f"{self.name} - starting...")
 
@@ -52,7 +56,7 @@ class GuiPlugin:
         self.runner.start()
         print(f"{self.name} - started")
         self.runner.join()
-        self.update_status()
+        # self.update_status()
 
     def stop(self):
         print(f"{self.name} stopping...")
@@ -65,4 +69,4 @@ class GuiPlugin:
             self.runner.join()
 
         print(f"{self.name} stopped.")
-        self.update_status()
+        # self.update_status()

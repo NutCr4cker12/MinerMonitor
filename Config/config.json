@@ -1,15 +1,37 @@
 {
-    "binance": {
-        "enabled": false,
-        "interval": 0.0333
-    },
     "hwinfoExe": {
         "name": "HWinfo.EXE",
-        "cmd": "C:\\Programs\\HWiNFO64\\HWiNFO64.EXE"
+        "cmd": "C:\\Programs\\HWiNFO64\\HWiNFO64.EXE",
+        "processName": "HWiNFO64.EXE",
+        "runAsAdmin": true
     },
     "afterburner": {
         "name": "AfterBurner",
-        "cmd": "C:\\Programs\\MSI Afterburner\\MSIAfterburner.exe"
+        "cmd": "C:\\Programs\\MSI Afterburner\\MSIAfterburner.exe",
+        "processName": "MSIAfterburner.exe",
+        "runAsAdmin": true
+    },
+    "aisuite": {
+        "name": "AiSuite",
+        "cmd": "C:\\Program Files (x86)\\ASUS\\AI Suite III\\AISuite3.exe",
+        "processName": "AISuite3.exe",
+        "runAsAdmin": true
+    },
+    "nicehash": {
+        "name": "NiceHash",
+        "cmd": "C:\\Users\\kimih\\AppData\\Local\\Programs\\NiceHash Miner\\NiceHashMiner.exe",
+        "processName": "NiceHashMiner.exe",
+        "runAsAdmin": false
+    },
+    "nicehashApi": {
+        "base": "https://api2.nicehash.com",
+        "organization": "$NICEHASH_ORGANIZATION",
+        "api_key": "$NICEHASH_API_KEY",
+        "api_secret": "$NICEHASH_API_SECRET"
+    },
+    "binance": {
+        "enabled": false,
+        "interval": 0.0333
     },
     "hwinfo": {
         "enabled": true,
@@ -111,7 +133,7 @@
             }
         ]
     },
-    "nicehash": {
+    "nicehashMonitor": {
         "enabled": false,
         "interval": 1
     },
