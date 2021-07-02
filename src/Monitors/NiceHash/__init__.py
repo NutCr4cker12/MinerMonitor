@@ -1,1 +1,1 @@
-from .Api import client, create_client
+from .NiceHashMonitor import NiceHashMonitor

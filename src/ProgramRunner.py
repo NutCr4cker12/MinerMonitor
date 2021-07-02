@@ -90,6 +90,35 @@ class Program:
         t.start()
         self.timer_threads[name] = t
 
+class HWiNFORemoteMonitor(Program):
+
+    def __init__(self, options, is_admin):
+        super().__init__(options, is_admin)
+        self.proc = None
+
+    def start(self):
+        if self.proc is not None:
+            self.proc.terminate()
+
+        cmd = f"powershell.exe -command start-process {self.cmd} -Verb runAs" if self.runAsAdmin and not self.is_admin else self.cmd
+        self.proc = subprocess.Popen(cmd, shell=True)
+        self.update_status()
+        # self._timed_thread(1, self._get_window, "get_window")
+
+    def stop(self):
+        if self.proc is None:
+            print("Can't stop HWiNFORemoteMonitor because it's not running")
+            return
+        self.proc.terminate()
+        self.proc = None
+        self.update_status()
+
+    def set_foreground(self):
+        self.update_status()
+
+    def update_status(self):
+        self.running = self.proc is not None
+
 
 class HWiNFOEXE(Program):
 

@@ -1,7 +1,8 @@
 from threading import Timer
 from PyQt5.QtWidgets import (
     QLabel,
-    QPushButton
+    QPushButton,
+    QCheckBox
 )
 
 class GuiPlugin:

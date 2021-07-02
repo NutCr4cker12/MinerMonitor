@@ -1,143 +1,166 @@
 {
-    "hwinfoExe": {
-        "name": "HWinfo.EXE",
-        "cmd": "C:\\Programs\\HWiNFO64\\HWiNFO64.EXE",
-        "processName": "HWiNFO64.EXE",
-        "runAsAdmin": true
+    "programs" : {
+        "hwinfoExe": {
+            "name": "HWinfo",
+            "processName": "HWiNFO64.EXE",
+            "cmd": "C:\\Programs\\HWiNFO64\\HWiNFO64.EXE",
+            "runAsAdmin": true
+        },
+        "hwinfoRemoteMonitor": {
+            "name": "HWinfo Remote Monitor",
+            "processName": "Remote Sensor Monitor.exe",
+            "cmd": [
+                "C:\\Programs\\HWiNFO64\\Remote.Sensor.Monitor.v.2.1.0\\Remote Sensor Monitor.exe", 
+                "--hwinfo=1",
+                "--gpuz=0",
+                "--aida64=0",
+                "--ohm=0"
+            ],
+            "runAsAdmin": true
+        },
+        "afterburner": {
+            "name": "AfterBurner",
+            "cmd": "C:\\Programs\\MSI Afterburner\\MSIAfterburner.exe",
+            "processName": "MSIAfterburner.exe",
+            "runAsAdmin": true
+        },
+        "aisuite": {
+            "name": "AiSuite",
+            "cmd": "C:\\Program Files (x86)\\ASUS\\AI Suite III\\AISuite3.exe",
+            "processName": "AISuite3.exe",
+            "runAsAdmin": true
+        },
+        "nicehash": {
+            "name": "NiceHash",
+            "cmd": "C:\\Users\\kimih\\AppData\\Local\\Programs\\NiceHash Miner\\NiceHashMiner.exe",
+            "processName": "NiceHashMiner.exe",
+            "runAsAdmin": false
+        }
     },
-    "afterburner": {
-        "name": "AfterBurner",
-        "cmd": "C:\\Programs\\MSI Afterburner\\MSIAfterburner.exe",
-        "processName": "MSIAfterburner.exe",
-        "runAsAdmin": true
-    },
-    "aisuite": {
-        "name": "AiSuite",
-        "cmd": "C:\\Program Files (x86)\\ASUS\\AI Suite III\\AISuite3.exe",
-        "processName": "AISuite3.exe",
-        "runAsAdmin": true
-    },
-    "nicehash": {
-        "name": "NiceHash",
-        "cmd": "C:\\Users\\kimih\\AppData\\Local\\Programs\\NiceHash Miner\\NiceHashMiner.exe",
-        "processName": "NiceHashMiner.exe",
-        "runAsAdmin": false
-    },
-    "nicehashApi": {
-        "base": "https://api2.nicehash.com",
-        "organization": "$NICEHASH_ORGANIZATION",
-        "api_key": "$NICEHASH_API_KEY",
-        "api_secret": "$NICEHASH_API_SECRET"
-    },
-    "binance": {
-        "enabled": false,
-        "interval": 0.0333
-    },
-    "hwinfo": {
-        "enabled": true,
-        "cmd": "C:\\Programs\\HWiNFO64\\HWiNFO64.EXE",
-        "monitorCmd": [
-            "C:\\Programs\\HWiNFO64\\Remote.Sensor.Monitor.v.2.1.0\\Remote Sensor Monitor.exe", 
-            "--hwinfo=1",
-            "--gpuz=0",
-            "--aida64=0",
-            "--ohm=0"
-        ],
-        "fetchInterval": 1,
-        "postInterval": 15,
-        "sensors": [
-            {
-                "class" : "CPU [#0]: AMD Ryzen 9 3900X: Enhanced",
-                "name" : "CPU (Tctl/Tdie)",
-                "saveAs" : "CPUTemp"
-            },
-            {
-                "class" : "CPU [#0]: AMD Ryzen 9 3900X: Enhanced",
-                "name" : "CPU Package Power",
-                "saveAs" : "CPUPower"
-            },
-            {
-                "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
-                "name" : "GPU Temperature",
-                "saveAs" : "3090_GPUTemp"
-            },
-            {
-                "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
-                "name" : "GPU Memory Junction Temperature",
-                "saveAs" : "3090_GPUMemJunctTemp"
-            },
-            {
-                "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
-                "name" : "GPU Hot Spot Temperature",
-                "saveAs" : "3090_GPUHotSpotTemp"
-            },
-            {
-                "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
-                "name" : "GPU Fan1",
-                "saveAs" : "3090_GPUFan1"
-            },
-            {
-                "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
-                "name" : "GPU Fan2",
-                "saveAs" : "3090_GPUFan2"
-            },
-            {
-                "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
-                "name" : "GPU Power",
-                "saveAs" : "3090_GPUPower"
-            },
-            {
-                "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
-                "name" : "GPU Fan1",
-                "saveAs" : "3090_GPUFan1"
-            },
-            {
-                "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
-                "name" : "GPU Fan2",
-                "saveAs" : "3090_GPUFan2"
-            },
-            {
-                "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
-                "name" : "GPU Temperature",
-                "saveAs" : "2070_GPUTemp"
-            },
-            {
-                "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
-                "name" : "GPU Hot Spot Temperature",
-                "saveAs" : "2070_GPUHotSpotTemp"
-            },
-            {
-                "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
-                "name" : "GPU Fan1",
-                "saveAs" : "2070_GPUFan1"
-            },
-            {
-                "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
-                "name" : "GPU Fan2",
-                "saveAs" : "2070_GPUFan2"
-            },
-            {
-                "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
-                "name" : "GPU Power",
-                "saveAs" : "2070_GPUPower"
-            },
-            {
-                "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
-                "name" : "GPU Fan1",
-                "saveAs" : "2070_GPUFan1"
-            },
-            {
-                "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
-                "name" : "GPU Fan2",
-                "saveAs" : "2070_GPUFan2"
+    "monitors": {
+        "nicehash": {
+            "name": "NiceHash",
+            "enabled": true,
+            "defaultEnabled": false,
+            "interval": 1,
+            "api": {
+                "base": "https://api2.nicehash.com",
+                "organization": "$NICEHASH_ORGANIZATION",
+                "api_key": "$NICEHASH_API_KEY",
+                "api_secret": "$NICEHASH_API_SECRET"
             }
-        ]
+        },
+        "binance": {
+            "name": "Binance",
+            "enabled": true,
+            "defaultEnabled": false,
+            "interval": 0.0333
+        },
+        "hwinfo": {
+            "name": "HWinfo",
+            "enabled": true,
+            "defaultEnabled": true,
+            "requiredProgram": "hwinfoExe",
+            "cmd": "C:\\Programs\\HWiNFO64\\HWiNFO64.EXE",
+            "monitorCmd": [
+                "C:\\Programs\\HWiNFO64\\Remote.Sensor.Monitor.v.2.1.0\\Remote Sensor Monitor.exe", 
+                "--hwinfo=1",
+                "--gpuz=0",
+                "--aida64=0",
+                "--ohm=0"
+            ],
+            "fetchInterval": 1,
+            "postInterval": 15,
+            "sensors": [
+                {
+                    "class" : "CPU [#0]: AMD Ryzen 9 3900X: Enhanced",
+                    "name" : "CPU (Tctl/Tdie)",
+                    "saveAs" : "CPUTemp"
+                },
+                {
+                    "class" : "CPU [#0]: AMD Ryzen 9 3900X: Enhanced",
+                    "name" : "CPU Package Power",
+                    "saveAs" : "CPUPower"
+                },
+                {
+                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
+                    "name" : "GPU Temperature",
+                    "saveAs" : "3090_GPUTemp"
+                },
+                {
+                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
+                    "name" : "GPU Memory Junction Temperature",
+                    "saveAs" : "3090_GPUMemJunctTemp"
+                },
+                {
+                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
+                    "name" : "GPU Hot Spot Temperature",
+                    "saveAs" : "3090_GPUHotSpotTemp"
+                },
+                {
+                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
+                    "name" : "GPU Fan1",
+                    "saveAs" : "3090_GPUFan1"
+                },
+                {
+                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
+                    "name" : "GPU Fan2",
+                    "saveAs" : "3090_GPUFan2"
+                },
+                {
+                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
+                    "name" : "GPU Power",
+                    "saveAs" : "3090_GPUPower"
+                },
+                {
+                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
+                    "name" : "GPU Fan1",
+                    "saveAs" : "3090_GPUFan1"
+                },
+                {
+                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
+                    "name" : "GPU Fan2",
+                    "saveAs" : "3090_GPUFan2"
+                },
+                {
+                    "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
+                    "name" : "GPU Temperature",
+                    "saveAs" : "2070_GPUTemp"
+                },
+                {
+                    "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
+                    "name" : "GPU Hot Spot Temperature",
+                    "saveAs" : "2070_GPUHotSpotTemp"
+                },
+                {
+                    "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
+                    "name" : "GPU Fan1",
+                    "saveAs" : "2070_GPUFan1"
+                },
+                {
+                    "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
+                    "name" : "GPU Fan2",
+                    "saveAs" : "2070_GPUFan2"
+                },
+                {
+                    "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
+                    "name" : "GPU Power",
+                    "saveAs" : "2070_GPUPower"
+                },
+                {
+                    "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
+                    "name" : "GPU Fan1",
+                    "saveAs" : "2070_GPUFan1"
+                },
+                {
+                    "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
+                    "name" : "GPU Fan2",
+                    "saveAs" : "2070_GPUFan2"
+                }
+            ]
+        }
     },
-    "nicehashMonitor": {
-        "enabled": false,
-        "interval": 1
-    },
-    "postgre": {
-        "connectionstring": "$POSTGRESQL_CONNECTION_STRING"
+    "mongo": {
+        "connectionString": "$MONGO_CONNECTION_STRING"
     }
 }

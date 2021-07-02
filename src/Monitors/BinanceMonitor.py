@@ -2,10 +2,7 @@ import requests
 import json
 import pandas as pd
 import datetime as dt
-import matplotlib.pyplot as plt
-import time
 from threading import Thread, Timer
-from .MonitorBase import MonitorBase
 
 def get_price(symbol: str = "BTCEUR", startTime: dt.datetime = dt.datetime.utcnow() - dt.timedelta(hours=1), endTime : dt.datetime = dt.datetime.utcnow(), interval = "1h"):
     url = "https://api.binance.com/api/v3/aggTrades"
@@ -21,7 +18,7 @@ def get_price(symbol: str = "BTCEUR", startTime: dt.datetime = dt.datetime.utcno
 
     r = requests.get(url, params = req_params)
     df = pd.DataFrame(json.loads(r.text))
-    df["price"] = df["p"].apply(lambda x: float(x))
+    df["price"] = df["p"].apply(float)
     return df["price"].mean()
     
 
@@ -29,15 +26,18 @@ class BinanceMonitor(Thread):
 
     def __init__(self, options, db):
         Thread.__init__(self, name="Binance")
+        self.name = options.name
+        self.defaultEnabled = options.defaultEnabled
         self.db = db
         self.interval = options.interval * 60
         self._running = True
+        self.running = False
 
     def run(self):
         while self._running:
             timer = Timer(self.interval, self.get_data)
             timer.start()
-            timer.join()
+            timer.join()    # Doesn't this block the main thread !?!
 
     def kill(self):
         self._running = False
