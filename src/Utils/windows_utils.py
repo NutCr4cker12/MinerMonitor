@@ -48,7 +48,6 @@ class Window(object):
         self.scrape_method = "windows"
         self.title = self.get_title()
         self.pyHwnd = win32gui.FindWindow(None, self.title)
-        self.pid = self._get_pid()
 
     def set_position(self, x, y, width, height):
         """Set window top-left corner position and size"""
@@ -83,7 +82,7 @@ class Window(object):
     def get_hwnd(self):
         return self._hwnd
 
-    def _get_pid(self):
+    def pid(self):
         pid = ctypes.c_ulong()
         res = GetWindowThreadProcessId(self._hwnd, ctypes.byref(pid))
         if isinstance(res, int):
@@ -210,8 +209,26 @@ def get_windows_by_name(name):
             print("Exception in getting windows by name: ", e)
     return winds
 
+# UNUSED !
+def get_window_by_pid(pid):
+    """Finds visible windowses and return \n
+    array of Window objects
+
+    Arguments:
+        name {String} -- Name to matched, doesn't need to be exact
+    """
+    winds = []
+    for window in get_windows():
+        try:
+            w = Window(window["hwnd"])
+            if w.pid() == pid:
+                winds.append(w)
+        except Exception as e:
+            print("Exception in getting windows by pid: ", e)
+    return winds
+
 
 if __name__ == "__main__":
-    titles = get_windows_by_name("nicehash")
+    titles = get_windows_by_name("hwinfo64")
     for k in titles:
-        print(k)
+        print(k.title, k.pid())

@@ -1,14 +1,10 @@
 from datetime import datetime
-from time import mktime
 import uuid
 import hmac
 import requests
 import json
+from time import mktime
 from hashlib import sha256
-import optparse
-import sys
-from threading import Thread, Timer
-from dotenv import dotenv_values
 
 class public_api:
 
@@ -151,150 +147,7 @@ class client:
         now_ec_since_epoch = mktime(now.timetuple()) + now.microsecond / 1000000.0
         return int(now_ec_since_epoch * 1000)
 
-    def algo_settings_from_response(self, algorithm, algo_response):
-        algo_setting = None
-        for item in algo_response['miningAlgorithms']:
-            if item['algorithm'] == algorithm:
-                algo_setting = item
-
-        if algo_setting is None:
-            raise Exception('Settings for algorithm not found in algo_response parameter')
-
-        return algo_setting
-
-    def get_accounts(self):
-        return self.request('GET', '/main/api/v2/accounting/accounts2/', '', None)
-
-    def get_accounts_for_currency(self, currency):
-        return self.request('GET', '/main/api/v2/accounting/account2/' + currency, '', None)
-
-    def get_withdrawal_addresses(self, currency, size, page):
-
-        params = "currency={}&size={}&page={}".format(currency, size, page)
-
-        return self.request('GET', '/main/api/v2/accounting/withdrawalAddresses/', params, None)
-
-    def get_withdrawal_types(self):
-        return self.request('GET', '/main/api/v2/accounting/withdrawalAddresses/types/', '', None)
-
-    def withdraw_request(self, address_id, amount, currency):
-        withdraw_data = {
-            "withdrawalAddressId": address_id,
-            "amount": amount,
-            "currency": currency
-        }
-        return self.request('POST', '/main/api/v2/accounting/withdrawal/', '', withdraw_data)
-
-    def get_my_active_orders(self, algorithm, market, limit):
-
-        ts = self.get_epoch_ms_from_now()
-        params = "algorithm={}&market={}&ts={}&limit={}&op=LT".format(algorithm, market, ts, limit)
-
-        return self.request('GET', '/main/api/v2/hashpower/myOrders', params, None)
-
-    def create_pool(self, name, algorithm, pool_host, pool_port, username, password):
-        pool_data = {
-            "name": name,
-            "algorithm": algorithm,
-            "stratumHostname": pool_host,
-            "stratumPort": pool_port,
-            "username": username,
-            "password": password
-        }
-        return self.request('POST', '/main/api/v2/pool/', '', pool_data)
-
-    def delete_pool(self, pool_id):
-        return self.request('DELETE', '/main/api/v2/pool/' + pool_id, '', None)
-
-    def get_my_pools(self, page, size):
-        return self.request('GET', '/main/api/v2/pools/', '', None)
-
-    def get_hashpower_orderbook(self, algorithm):
-        return self.request('GET', '/main/api/v2/hashpower/orderBook/', 'algorithm=' + algorithm, None )
-    
-    def create_hashpower_order(self, market, type, algorithm, price, limit, amount, pool_id, algo_response):
-
-        algo_setting = self.algo_settings_from_response(algorithm, algo_response)
-
-        order_data = {
-            "market": market,
-            "algorithm": algorithm,
-            "amount": amount,
-            "price": price,
-            "limit": limit,
-            "poolId": pool_id,
-            "type": type,
-            "marketFactor": algo_setting['marketFactor'],
-            "displayMarketFactor": algo_setting['displayMarketFactor']
-        }
-        return self.request('POST', '/main/api/v2/hashpower/order/', '', order_data)
-
-    def cancel_hashpower_order(self, order_id):
-        return self.request('DELETE', '/main/api/v2/hashpower/order/' + order_id, '', None)
-
-    def refill_hashpower_order(self, order_id, amount):
-        refill_data = {
-            "amount": amount
-        }
-        return self.request('POST', '/main/api/v2/hashpower/order/' + order_id + '/refill/', '', refill_data)
-
-    def set_price_hashpower_order(self, order_id, price, algorithm, algo_response):
-
-        algo_setting = self.algo_settings_from_response(algorithm, algo_response)
-
-        price_data = {
-            "price": price,
-            "marketFactor": algo_setting['marketFactor'],
-            "displayMarketFactor": algo_setting['displayMarketFactor']
-        }
-        return self.request('POST', '/main/api/v2/hashpower/order/' + order_id + '/updatePriceAndLimit/', '',
-                            price_data)
-
-    def set_limit_hashpower_order(self, order_id, limit, algorithm, algo_response):
-        algo_setting = self.algo_settings_from_response(algorithm, algo_response)
-        limit_data = {
-            "limit": limit,
-            "marketFactor": algo_setting['marketFactor'],
-            "displayMarketFactor": algo_setting['displayMarketFactor']
-        }
-        return self.request('POST', '/main/api/v2/hashpower/order/' + order_id + '/updatePriceAndLimit/', '',
-                            limit_data)
-
-    def set_price_and_limit_hashpower_order(self, order_id, price, limit, algorithm, algo_response):
-        algo_setting = self.algo_settings_from_response(algorithm, algo_response)
-
-        price_data = {
-            "price": price,
-            "limit": limit,
-            "marketFactor": algo_setting['marketFactor'],
-            "displayMarketFactor": algo_setting['displayMarketFactor']
-        }
-        return self.request('POST', '/main/api/v2/hashpower/order/' + order_id + '/updatePriceAndLimit/', '',
-                            price_data)
-
-    def get_my_exchange_orders(self, market):
-        return self.request('GET', '/exchange/api/v2/myOrders', 'market=' + market, None)
-
-    def get_my_exchange_trades(self, market):
-        return self.request('GET','/exchange/api/v2/myTrades', 'market=' + market, None)
-
-    def create_exchange_limit_order(self, market, side, quantity, price):
-        query = "market={}&side={}&type=limit&quantity={}&price={}".format(market, side, quantity, price)
-        return self.request('POST', '/exchange/api/v2/order', query, None)
-
-    def create_exchange_buy_market_order(self, market, quantity):
-        query = "market={}&side=buy&type=market&secQuantity={}".format(market, quantity)
-        return self.request('POST', '/exchange/api/v2/order', query, None)
-
-    def create_exchange_sell_market_order(self, market, quantity):
-        query = "market={}&side=sell&type=market&quantity={}".format(market, quantity)
-        return self.request('POST', '/exchange/api/v2/order', query, None)
-
-    def cancel_exchange_order(self, market, order_id):
-        query = "market={}&orderId={}".format(market, order_id)
-        return self.request('DELETE', '/exchange/api/v2/order', query, None)
-
-    def get_my_payouts(self, start: datetime, end: datetime, size : int = None):
+    def get_payouts(self, start: datetime, end: datetime, size : int = None):
         _size = size
         if size is None:
             time_diff = end.timestamp() - start.timestamp()
@@ -306,6 +159,10 @@ class client:
     def get_unpaid(self, start: datetime, end: datetime):
         query = f"afterTimestamp={int(start.timestamp() * 1000)}&beforeTimestamp={int(end.timestamp() * 1000)}"
         return self.request('GET', '/main/api/v2/mining/rigs/stats/unpaid', query, None)
+
+    def get_active_workers(self):
+        query = ""
+        return self.request('GET', '/main/api/v2/mining/rigs/activeWorkers', query, None)
 
 def create_client(options, verbose = False):
     api = client(options.base, options.organization, options.api_key, options.api_secret, verbose=verbose)

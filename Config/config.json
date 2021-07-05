@@ -2,13 +2,13 @@
     "programs" : {
         "hwinfoExe": {
             "name": "HWinfo",
-            "processName": "HWiNFO64.EXE",
+            "windowTitle": "HWiNFO64",
             "cmd": "C:\\Programs\\HWiNFO64\\HWiNFO64.EXE",
             "runAsAdmin": true
         },
         "hwinfoRemoteMonitor": {
             "name": "HWinfo Remote Monitor",
-            "processName": "Remote Sensor Monitor.exe",
+            "windowTitle": "Remote Sensor Monitor.exe",
             "cmd": [
                 "C:\\Programs\\HWiNFO64\\Remote.Sensor.Monitor.v.2.1.0\\Remote Sensor Monitor.exe", 
                 "--hwinfo=1",
@@ -21,19 +21,19 @@
         "afterburner": {
             "name": "AfterBurner",
             "cmd": "C:\\Programs\\MSI Afterburner\\MSIAfterburner.exe",
-            "processName": "MSIAfterburner.exe",
+            "windowTitle": "msi afterburner",
             "runAsAdmin": true
         },
         "aisuite": {
             "name": "AiSuite",
             "cmd": "C:\\Program Files (x86)\\ASUS\\AI Suite III\\AISuite3.exe",
-            "processName": "AISuite3.exe",
+            "windowTitle": "aisuite",
             "runAsAdmin": true
         },
         "nicehash": {
             "name": "NiceHash",
             "cmd": "C:\\Users\\kimih\\AppData\\Local\\Programs\\NiceHash Miner\\NiceHashMiner.exe",
-            "processName": "NiceHashMiner.exe",
+            "windowTitle": "nicehash miner",
             "runAsAdmin": false
         }
     },
@@ -41,7 +41,7 @@
         "nicehash": {
             "name": "NiceHash",
             "enabled": true,
-            "defaultEnabled": false,
+            "defaultEnabled": true,
             "interval": 1,
             "api": {
                 "base": "https://api2.nicehash.com",
@@ -59,7 +59,7 @@
         "hwinfo": {
             "name": "HWinfo",
             "enabled": true,
-            "defaultEnabled": true,
+            "defaultEnabled": false,
             "requiredProgram": "hwinfoExe",
             "cmd": "C:\\Programs\\HWiNFO64\\HWiNFO64.EXE",
             "monitorCmd": [
@@ -71,6 +71,7 @@
             ],
             "fetchInterval": 1,
             "postInterval": 15,
+            "GPUS": ["3090", "2070"],
             "sensors": [
                 {
                     "class" : "CPU [#0]: AMD Ryzen 9 3900X: Enhanced",
@@ -100,27 +101,19 @@
                 {
                     "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
                     "name" : "GPU Fan1",
-                    "saveAs" : "3090_GPUFan1"
+                    "saveAs" : "3090_GPUFan1",
+                    "unit": "%"
                 },
                 {
                     "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
                     "name" : "GPU Fan2",
-                    "saveAs" : "3090_GPUFan2"
+                    "saveAs" : "3090_GPUFan2",
+                    "unit": "%"
                 },
                 {
                     "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
                     "name" : "GPU Power",
                     "saveAs" : "3090_GPUPower"
-                },
-                {
-                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
-                    "name" : "GPU Fan1",
-                    "saveAs" : "3090_GPUFan1"
-                },
-                {
-                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
-                    "name" : "GPU Fan2",
-                    "saveAs" : "3090_GPUFan2"
                 },
                 {
                     "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
@@ -135,27 +128,19 @@
                 {
                     "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
                     "name" : "GPU Fan1",
-                    "saveAs" : "2070_GPUFan1"
+                    "saveAs" : "2070_GPUFan1",
+                    "unit": "%"
                 },
                 {
                     "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
                     "name" : "GPU Fan2",
-                    "saveAs" : "2070_GPUFan2"
+                    "saveAs" : "2070_GPUFan2",
+                    "unit": "%"
                 },
                 {
                     "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
                     "name" : "GPU Power",
                     "saveAs" : "2070_GPUPower"
-                },
-                {
-                    "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
-                    "name" : "GPU Fan1",
-                    "saveAs" : "2070_GPUFan1"
-                },
-                {
-                    "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
-                    "name" : "GPU Fan2",
-                    "saveAs" : "2070_GPUFan2"
                 }
             ]
         }

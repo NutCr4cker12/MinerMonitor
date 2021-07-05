@@ -1,30 +1,36 @@
 
-import datetime
-import json
 from pymongo import MongoClient
 from multiprocessing import Process, Queue
 
-def handle_posts(connection_string: str, queue: Queue):
-    print("Starting mongo...")
-    client = MongoClient(connection_string)
+def create_client(conn_string : str):
+    client = MongoClient(conn_string)
     db = client["foodpickerdb"]
+    return db
+
+def handle_posts(connection_string : str, queue: Queue):
+    print("Starting mongo...")
+    db = create_client(connection_string)
     print("Mongo started")
     print("Waiting for something to post....")
     
     while True:
         payload = queue.get()
 
-        print("Got payload: ", json.dumps(payload, indent=2))
+        # print("Got payload: ", json.dumps(payload, indent=2))
 
         source = payload["source"]
         data = payload["data"]
-        data["time"] = datetime.datetime.utcnow()
 
         if source not in ["hwinfo", "binance", "nicehash"]:
             raise Exception(f"Unkwnon source in payload: {str(payload)}")
 
         collection = db[source]
-        collection.insert(data)
+        if isinstance(data, dict):
+            collection.insert(data)
+        elif isinstance(data, list):
+            collection.insert_many(data)
+        else:
+            raise Exception(f"Unkwnon data format in payload: {str(data)}")
 
 
 class Mongo:

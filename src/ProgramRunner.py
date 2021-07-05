@@ -3,15 +3,30 @@ import time
 import os
 import pyautogui
 import threading
+# sys.path.append(os.getcwd())
 
 from src.Utils.windows_utils import get_windows_by_name
 from src.Utils.image_utils import get_image_position
+from src.Utils.util_funcs import force_stop
 
 def get_single_window(name):
     windows = get_windows_by_name(name)
     if len(windows) == 0:
         return None
-    return windows[0]
+
+    if len(windows) == 1:
+        return windows[0]
+
+    shortest_name = 999999
+    w = None
+    for wind in windows:
+        title_len = len(wind.title) - len(name)
+        if title_len >= 0 and title_len < shortest_name:
+            shortest_name = title_len
+            w = wind
+
+    return w
+
 
 def check_running_process(name):
     processes = subprocess.Popen(['tasklist'], stdout=subprocess.PIPE)
@@ -20,24 +35,25 @@ def check_running_process(name):
     if errors:
         return (False, None)
 
+    pids = []
     for outline in output.splitlines():
         line = str(outline).lower()
         if name.lower() in line:
             try:
                 splitted = line.split(".exe")[1].strip().split(" ")[0]
                 pid = int(splitted)
-                return (True, pid)
+                pids.append(pid)
             except Exception:
                 pass
                 
-    return (False, None)
+    return (len(pids) > 0, pids)
 
 class Program:
 
     def __init__(self, options, is_admin):
         self.name = options.name
         self.cmd = options.cmd
-        self.procName = options.processName
+        self.windowTitle = options.windowTitle
         self.runAsAdmin = options.runAsAdmin
         self.update_callback = None
         self.timer_threads = {}
@@ -55,8 +71,9 @@ class Program:
 
     def stop(self):
         if self._get_window() is not None:
-            _, pid = check_running_process(self.name.lower().replace(".exe", ""))
+            pid = self.window.pid()
             os.kill(pid, 9)
+
             self._timed_thread(1, self._get_window, "get_window")
             return
 
@@ -72,8 +89,13 @@ class Program:
         self._get_window()
 
     def _get_window(self):
-        self.window = get_single_window(self.name.lower().replace(".exe", ""))
+        self.window = get_single_window(self.windowTitle.lower())
         self.running = self.window is not None
+
+        if "hwinfo" in self.name.lower() and self.window is not None:
+            pid = self.window.pid()
+            print("HWINFOEXE started with pid: ", pid)
+
         if callable(self.update_callback):
             try:
                 self.update_callback()
@@ -95,8 +117,9 @@ class HWiNFORemoteMonitor(Program):
     def __init__(self, options, is_admin):
         super().__init__(options, is_admin)
         self.proc = None
+        self.running = False
 
-    def start(self):
+    def start(self): # TODO please add check if the system started running / there was a error with starting, PIPE in / out (?)
         if self.proc is not None:
             self.proc.terminate()
 
@@ -130,18 +153,37 @@ class HWiNFOEXE(Program):
         super().start()
 
         # Wait for the process to start
-        for _ in range(20):
-            x, y = get_image_position("run.PNG")
-            if x is not None and y is not None:
-                self._click_run(x, y)
-                return
-            time.sleep(0.5)
-        
-        raise Exception("Wasn't able to find image position")
+        self._click_run()
 
-    def _click_run(self, x, y):
+    def wait_for_image(self, image_name : str, wait_time : float):
+        # Wait for the process to start
+        for _ in range(20):
+            x, y = get_image_position(image_name)
+            if x is not None and y is not None:
+                return (x, y)
+            time.sleep(wait_time)
+
+        raise Exception(f"Wasn't able to find image position {image_name}")
+
+    def _click_run(self):
         orig_x, orig_y = pyautogui.position()
+
+        x, y = self.wait_for_image("settings.PNG", 0.5)
         pyautogui.click(x=x, y=y)
+
+        time.sleep(0.5)
+        x, y = get_image_position("shared_unchecked.PNG", thershold=0.95)
+        is_unchecked = x is not None and y is not None
+        if is_unchecked:
+            pyautogui.click(x=x, y=y)
+
+        time.sleep(0.5)
+        x, y = self.wait_for_image("ok.PNG", 0.1)
+        pyautogui.click(x=x, y=y)
+
+        x, y = self.wait_for_image("run.PNG", 0.5)
+        pyautogui.click(x=x, y=y)
+        
         pyautogui.moveTo(x=orig_x, y=orig_y)
 
         super()._timed_thread(2, super()._get_window, "get_window")
@@ -152,16 +194,45 @@ class HWiNFOEXE(Program):
             return
 
         print(f"Restarting {self.name}")
-        super().stop()
+        self.stop()
         time.sleep(2)
         
         print(f"Starting {self.name}...")
         self.start()
 
+    def stop(self):
+        running, pids = check_running_process(self.windowTitle)
+        if running:
+            for pid in pids:
+                print("HWINFO was acutally running with pid: ", pid)
+            
+            if len(pids) == 1:
+                os.kill(pids[0], 9)
+                super()._timed_thread(1, self._get_window, "get_window")
+        else:
+            print("Cant stop HWINFO, didn't find the pid!")
+
     def _dont_restart(self):
-        with open("stopTestRun.txt", "r") as file:
-            if "stop" in file.readline():
-                print("Stopping restart due to txt file!")
-                return True
-        return False
+        return force_stop()
     
+
+if __name__ == "__main__":
+    name = "msiafterburner"
+    found, ps = check_running_process(name)
+
+    print("Tasks:")
+    if not found:
+        print("No task found!")
+    else:
+        for p in ps:
+            print(p)
+
+    print("---")
+    print("Windows:")
+    w = get_single_window(name)
+    
+    if w is None:
+        print("No windows found !!!")
+    else:
+        print(w.title)
+        w.set_foreground()

@@ -1,1 +1,1 @@
-from .NiceHashMonitor import NiceHashMonitor
+from .NiceHashMonitor import run_monitor, pre_run

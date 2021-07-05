@@ -2,3 +2,5 @@
 .env*
 /.vscode/.ropeproject/config.py
 /.vscode/launch.json
+/.vscode/.ropeproject/objectdb
+/forceStop.txt

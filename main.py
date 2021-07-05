@@ -1,9 +1,14 @@
 from Config import Config
 from src import (
     Program, HWiNFOEXE, HWiNFORemoteMonitor,        # Programs
-    HWinfoMonitor, BinanceMonitor, NiceHashMonitor, # Monitors
     Mongo,                                          # Database    
     GUI, is_admin                                   # Utils and GUI
+)
+from src.Monitors import (                          # Monitors
+    MonitorRunner,
+    run_hwinfo_monitor,
+    run_nh_monitor, pre_run_nh,
+    run_binance_monitor, pre_run_binance
 )
 
 
@@ -21,10 +26,9 @@ def get_programs(options):
 def get_monitors(options, database):
     monitors = []
 
-    q = database.queue
-    monitors.append(HWinfoMonitor(options.monitors.hwinfo, q))
-    monitors.append(BinanceMonitor(options.monitors.binance, database))
-    monitors.append(NiceHashMonitor(options.monitors.nicehash, database))
+    monitors.append(MonitorRunner(options.monitors.hwinfo, database, options.mongo, None, run_hwinfo_monitor))
+    monitors.append(MonitorRunner(options.monitors.binance, database, options.mongo, pre_run_binance, run_binance_monitor))
+    monitors.append(MonitorRunner(options.monitors.nicehash, database, options.mongo, pre_run_nh, run_nh_monitor))
 
     return monitors
 

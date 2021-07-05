@@ -1,72 +1,71 @@
 import requests
 import json
 import time
-import multiprocessing as mp
+import datetime
+from collections import defaultdict
+from src import force_stop
 
-def run_monitor(sensors, database):
-    i = 0
-    while i < 10:
-        data = get_data(sensors)
-        payload = {
-            "source": "hwinfo",
-            "data": data
-        }
-        database.put(payload)
-        # print(json.dumps(data, indent=2))
-        
-        i += 1
-        time.sleep(10)
+def run_monitor(options, queue, _):
+    sensors = options.sensors
+    gpus = options.GPUS
 
-def get_data(sensors):
+    data = defaultdict(lambda : [])
+    for gpu in gpus:
+        data[gpu] = defaultdict(lambda : [])
+
+    # Collect 1 minute avgs
+    for _ in range(int(60 / 5)):
+        data = get_data(data, sensors, gpus)
+        time.sleep(5)
+
+    # Init payload with empty data
+    payload = {
+        "source": "hwinfo",
+        "time": datetime.datetime.utcnow(),
+        "data": {}
+    }
+
+    # Generate avgs into payload data
+    for key, value in data.items():
+        if key in gpus:
+            payload["data"][key] = {}
+            for k, v in data[key].items():
+                payload["data"][key][k] = (sum(v) * 1.0) / (len(v) * 1.0)  # TODO possible 0 division, shouldnt happen but...
+        else:
+            payload["data"][key] = (sum(value) * 1.0) / (len(value) * 1.0)
+
+    queue.put(payload)
+
+    if force_stop():
+        return
+
+    run_monitor(options, queue, None)
+
+def get_data(data, sensors, gpus):
     r = requests.get("http://localhost:55555")
     current_sensors = json.loads(r.text)
-
-    data = {}
 
     for sensor in current_sensors:
         name = sensor["SensorName"]
         sclass = sensor["SensorClass"]
 
         for s in sensors:
-            if s["class"] in sclass and s["name"] == name:
-                data[s["saveAs"]] = float(sensor["SensorValue"].replace(",", "."))
-                # if "GPUPower" in s["saveAs"]:
-                #     print(json.dumps(sensor, indent=2))
+            if s["class"] in sclass and s["name"] == name and ("unit" not in s or s["unit"] == sensor["SensorUnit"]):
+                sensor_value = float(sensor["SensorValue"].replace(",", "."))
+
+                was_gpu = False
+                for gpu in gpus:
+                    if gpu in s["saveAs"]:
+                        was_gpu = True
+                        save_as = s["saveAs"].split(f"{gpu}_")[1]
+
+                        # Group all fans into one
+                        if "Fan" in s["name"]:
+                            save_as = save_as[:-1]
+
+                        data[gpu][save_as].append(sensor_value)
+                        break
+                
+                if not was_gpu:
+                    data[s["saveAs"]].append(sensor_value)
     return data
-
-class HWinfoMonitor():
-
-    def __init__(self, options, db):
-        self.options = options
-        self.db = db
-        self.name = options.name
-        self.defaultEnabled = options.defaultEnabled
-        self.sensors = options.sensors
-        self.running = False
-
-        self.monitor_process = None
-
-        # self.hwinfo_program = hwinfo_program
-        # self.hwinfo_remote_monitor = hwinfo_remote_monitor
-
-        # self.monitor_process = None
-        # self.process_run_time = None
-        # self._window = None
-        
-    def start(self):
-        self.running = True
-        self.monitor_process = mp.Process(target=run_monitor, args=(self.sensors, self.db, ))
-        self.monitor_process.start()
-        
-    def kill(self):
-        self.running = False
-        self.monitor_process.terminate()
-        print("Stop event set, joining...")
-        self.monitor_process.join()
-        print("Joined")
-        self.monitor_process = None
-
-    def post_data(self, data):
-        with open("dummy_data.txt", "a+") as file:
-            file.writelines(json.dumps(data, indent=2))
-            file.write("At least I'm writing")

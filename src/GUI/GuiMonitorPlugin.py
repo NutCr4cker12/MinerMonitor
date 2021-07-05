@@ -14,7 +14,7 @@ class GuiMonitorPlugin:
         
         self.running = False
         self.check_box = QCheckBox(self.name)
-        self.check_box.setChecked(self.monitor_plugin.defaultEnabled)
+        self.check_box.setChecked(self.monitor_plugin.options.defaultEnabled)
         self.toggle_run_btn = QPushButton("Start")
         self.toggle_run_btn.clicked.connect(self.toggle_run)
         self.status_label = QLabel("")

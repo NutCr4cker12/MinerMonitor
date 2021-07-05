@@ -24,8 +24,6 @@ class App(QtWidgets.QWidget):
         # Empty row
         self.layout.addWidget(QtWidgets.QLabel(""), len(self.plugins) + 1, 1, 1, 2)
 
-        # TODO callback from hwinfo status update to run all programs btn enabled/disabled
-
         for i, monitor_plugin in enumerate(self.monitor_plugins):
             self.__dict__[monitor_plugin.name] = GuiMonitorPlugin(self, monitor_plugin, i + len(self.plugins) + 2)
             self.__dict__[monitor_plugin.name].add_gui_row()
