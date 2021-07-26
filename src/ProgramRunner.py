@@ -3,6 +3,7 @@ import time
 import os
 import pyautogui
 import threading
+from queue import Queue, Empty
 # sys.path.append(os.getcwd())
 
 from src.Utils.windows_utils import get_windows_by_name
@@ -96,13 +97,15 @@ class Program:
             pid = self.window.pid()
             print("HWINFOEXE started with pid: ", pid)
 
+        self.answer_callback()
+        return self.window
+
+    def answer_callback(self):
         if callable(self.update_callback):
             try:
                 self.update_callback()
             except Exception:
                 pass
-
-        return self.window
 
     def _timed_thread(self, timeout: int, func: callable, name: str):
         if name in self.timer_threads:
@@ -112,28 +115,91 @@ class Program:
         t.start()
         self.timer_threads[name] = t
 
+def _enqueue_proc_output(out, queue):
+    for line in iter(out.readline, b''):
+        queue.put(line.decode("utf-8"))
+    out.close()
+
 class HWiNFORemoteMonitor(Program):
 
     def __init__(self, options, is_admin):
         super().__init__(options, is_admin)
         self.proc = None
+        self.proc_queue = None
+        self.proc_read_thread = None
         self.running = False
 
-    def start(self): # TODO please add check if the system started running / there was a error with starting, PIPE in / out (?)
-        if self.proc is not None:
-            self.proc.terminate()
+    def start(self):
+        self.stop()
 
-        cmd = f"powershell.exe -command start-process {self.cmd} -Verb runAs" if self.runAsAdmin and not self.is_admin else self.cmd
-        self.proc = subprocess.Popen(cmd, shell=True)
-        self.update_status()
-        # self._timed_thread(1, self._get_window, "get_window")
+        self.proc = subprocess.Popen(self.cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
+        self.proc_queue = Queue()
+        self.proc_read_thread = threading.Thread(target=_enqueue_proc_output, args=(self.proc.stdout, self.proc_queue, ))
+        self.proc_read_thread.daemon = True
+        self.proc_read_thread.start()
+
+        start = time.time()
+        hwinfo_enabled = False
+        web_server_running = False
+        error_line = ""
+        while time.time() - start < 5:
+            try:
+                line = self.proc_queue.get_nowait()
+            except Empty:
+                pass
+            else:
+                if "An error occured" in line:
+                    error_line = line
+                    break
+                if "Web server running" in line:
+                    web_server_running = True
+                elif "HWiNFO process found! Enabling HWiNFO" in line:
+                    hwinfo_enabled = True
+
+                if hwinfo_enabled and web_server_running:
+                    break
+        
+        if hwinfo_enabled and web_server_running:
+            print(f"{self.name} started!")
+            self.update_status()
+            super()._timed_thread(1, self.listen_hwinfo_restart, "listen_hwinfo_restart")
+            return
+        
+        print(f"{self.name} failed to start due to error: {error_line}")
+        self.stop()
+        time.sleep(5)
+        self.start()
+
+    def listen_hwinfo_restart(self):
+        while self.proc is not None and self.proc_read_thread is not None and self.proc_queue is not None:
+            try:
+                line = self.proc_queue.get_nowait()
+            except Empty:
+                pass
+            else:
+                if "An error occured" in line:
+                    print(f"{self.name} detected error in remote monitor, restarting...")
+                    self.stop()
+                    time.sleep(5)
+                    self.start()
+                    return
+            time.sleep(2)
+        print(f"{self.name} hwinfo restart listener exited without noticing error")
+    
 
     def stop(self):
         if self.proc is None:
-            print("Can't stop HWiNFORemoteMonitor because it's not running")
             return
+
         self.proc.terminate()
         self.proc = None
+
+        if self.proc_read_thread is None:
+            self.update_status()    
+            return
+
+        self.proc_read_thread.join()
+        self.proc_read_thread = None
         self.update_status()
 
     def set_foreground(self):
@@ -141,6 +207,8 @@ class HWiNFORemoteMonitor(Program):
 
     def update_status(self):
         self.running = self.proc is not None
+        super().answer_callback()
+
 
 
 class HWiNFOEXE(Program):

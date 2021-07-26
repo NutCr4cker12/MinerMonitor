@@ -44,7 +44,7 @@ def get_price_from_request(request) -> float:
 def request_weight(request):
     return int(request.headers["x-mbx-used-weight-1m"])
 
-def get_price(symbol: str = "BTCEUR", startTime: dt.datetime = dt.datetime.utcnow() - dt.timedelta(hours=1), endTime : dt.datetime = dt.datetime.utcnow(), interval = "1h"):
+def get_price(symbol: str = "BTCEUR", startTime: dt.datetime = dt.datetime.utcnow() - dt.timedelta(hours=1), endTime : dt.datetime = dt.datetime.utcnow()):
     url = "https://api.binance.com/api/v3/aggTrades"
 
     startTime = str(int(startTime.timestamp() * 1000))
@@ -96,33 +96,33 @@ def fill_prices_since(start_time: dt, end_time: dt = None):
     
     return prices, next_time
 
-def run_monitor(options, queue, latest_document):
+def run_monitor(_, queue, latest_document):
     latest_time = latest_document["time"]
 
-    now = dt.datetime.utcnow()
-    time_diff = (now - latest_time).total_seconds()
-    if time_diff < 60 * 60:
+    while True:
+        now = dt.datetime.utcnow()
+        time_diff = (now - latest_time).total_seconds()
+
         # Latest price is already posted, wait for the next
-        time.sleep(time_diff + 5)
-        if force_stop():
-            return
-        return run_monitor(options, queue, latest_document)
+        if time_diff < 60 * 60:
+            time.sleep(time_diff + 5)
+            if force_stop():
+                return
+        else:
+            # Fill up the data up to date
+            prices, last_time = fill_prices_since(latest_time)
 
-    # Fill up the data up to date
-    prices, last_time = fill_prices_since(latest_time)
+            payload = {
+                "source": "binance",
+                "data": prices
+            }
 
-    payload = {
-        "source": "binance",
-        "data": prices
-    }
+            queue.put(payload)
+            latest_time = last_time
 
-    queue.put(payload)
-    new_fake_document = { "time": last_time }
-
-    # Check force stop every 5 minutes
-    # Total sleep time == 1 hour
-    for _ in range(12):
-        if force_stop():
-            return
-        time.sleep(5 * 60)
-    run_monitor(options, queue, new_fake_document)
+            # Check force stop every 5 minutes
+            # Total sleep time == 1 hour
+            for _ in range(12):
+                if force_stop():
+                    return
+                time.sleep(5 * 60)

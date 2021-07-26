@@ -10,7 +10,7 @@
             "name": "HWinfo Remote Monitor",
             "windowTitle": "Remote Sensor Monitor.exe",
             "cmd": [
-                "C:\\Programs\\HWiNFO64\\Remote.Sensor.Monitor.v.2.1.0\\Remote Sensor Monitor.exe", 
+                "C:\\Programs\\HWiNFO64\\Remote.Sensor.Monitor.v.2.1.0\\RemoteSensorMonitor.exe", 
                 "--hwinfo=1",
                 "--gpuz=0",
                 "--aida64=0",
@@ -63,7 +63,7 @@
             "requiredProgram": "hwinfoExe",
             "cmd": "C:\\Programs\\HWiNFO64\\HWiNFO64.EXE",
             "monitorCmd": [
-                "C:\\Programs\\HWiNFO64\\Remote.Sensor.Monitor.v.2.1.0\\Remote Sensor Monitor.exe", 
+                "C:\\Programs\\HWiNFO64\\Remote.Sensor.Monitor.v.2.1.0\\RemoteSensorMonitor.exe", 
                 "--hwinfo=1",
                 "--gpuz=0",
                 "--aida64=0",

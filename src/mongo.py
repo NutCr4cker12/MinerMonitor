@@ -14,23 +14,26 @@ def handle_posts(connection_string : str, queue: Queue):
     print("Waiting for something to post....")
     
     while True:
-        payload = queue.get()
+        try:
+            payload = queue.get()
 
-        # print("Got payload: ", json.dumps(payload, indent=2))
+            # print("Got payload: ", json.dumps(payload, indent=2))
 
-        source = payload["source"]
-        data = payload["data"]
+            source = payload["source"]
+            data = payload["data"]
 
-        if source not in ["hwinfo", "binance", "nicehash"]:
-            raise Exception(f"Unkwnon source in payload: {str(payload)}")
+            if source not in ["hwinfo", "binance", "nicehash"]:
+                raise Exception(f"Unkwnon source in payload: {str(payload)}")
 
-        collection = db[source]
-        if isinstance(data, dict):
-            collection.insert(data)
-        elif isinstance(data, list):
-            collection.insert_many(data)
-        else:
-            raise Exception(f"Unkwnon data format in payload: {str(data)}")
+            collection = db[source]
+            if isinstance(data, dict):
+                collection.insert(data)
+            elif isinstance(data, list):
+                collection.insert_many(data)
+            else:
+                raise Exception(f"Unkwnon data format in payload: {str(data)}")
+        except Exception as e:
+            print("Mongo post handler got exception: ", str(e))
 
 
 class Mongo:

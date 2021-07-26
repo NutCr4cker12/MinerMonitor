@@ -42,6 +42,7 @@ def history(start: datetime, end: datetime):
     payouts = nh_api.get_my_payouts(start, end)
 
     # Get algo stats
+    # TODO NiceHash keeps only last 7 days worth of data stored !!!
     unpaid = nh_api.get_unpaid(start, end)
 
     # Fill mining start and end times

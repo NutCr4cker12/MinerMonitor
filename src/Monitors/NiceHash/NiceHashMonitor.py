@@ -16,7 +16,7 @@ def seconds_till_next_payout(timestamp:  dt) -> float:
     now = dt.datetime.utcnow()
     if next_assumed_payout > now:
         time_difference = next_assumed_payout - now
-        time_diff_seconds = time_difference.total_seconds() + 5
+        time_diff_seconds = time_difference.total_seconds() + 15
     else:
         time_diff_seconds = 0.1
     
@@ -25,50 +25,49 @@ def seconds_till_next_payout(timestamp:  dt) -> float:
 def run_monitor(options, queue, latest_document):
     api = create_api_client(options.api)
 
-    # Fill up the data up to date
-    latest_time = latest_document["created"] + dt.timedelta(hours=1)
+    while not force_stop():
+        # Fill up the data up to date
+        latest_time = latest_document["created"]
 
-    # If the monitor is started so that the latest time is already fetced, wait for next assumed payout
-    would_sleep = seconds_till_next_payout(latest_time)
-    if would_sleep > 1:
-        time.sleep(would_sleep)
-        if force_stop():
-            return
-        return run_monitor(options, queue, latest_document)
+        # If the monitor is started so that the latest time is already fetced, wait for next assumed payout
+        would_sleep = seconds_till_next_payout(latest_time)
+        if would_sleep > 1:
+            time.sleep(would_sleep)
+            if force_stop():
+                return
+            return run_monitor(options, queue, latest_document)
 
-    payouts_before_this = api.get_payouts(latest_time, dt.datetime.utcnow())
+        payouts_before_this = api.get_payouts(latest_time + dt.timedelta(hours=1), dt.datetime.utcnow())
 
-    timestamps = []
-    payload = {
-        "source": "nicehash",
-        "data": []
-    }
+        timestamps = []
+        payload = {
+            "source": "nicehash",
+            "data": []
+        }
 
-    # cleanup data
-    for payout in payouts_before_this["list"]:
-        timestamp = dt.datetime.fromtimestamp(payout["created"] / 1000)
-        timestamps.append(timestamp)
+        # cleanup data
+        for payout in payouts_before_this["list"]:
+            timestamp = dt.datetime.fromtimestamp(payout["created"] / 1000)
+            timestamps.append(timestamp)
 
-        payout["created"] = timestamp
-        payout["currency"] = payout["currency"]["description"]
-        payout["amount"] = float(payout["amount"])
-        payout["feeAmount"] = float(payout["feeAmount"])
+            payout["created"] = timestamp
+            payout["currency"] = payout["currency"]["description"]
+            payout["amount"] = float(payout["amount"])
+            payout["feeAmount"] = float(payout["feeAmount"])
 
-        if "accountType" in payout: 
-            del payout["accountType"]
-        if "metadata" in payout: 
-            del payout["metadata"]
+            if "accountType" in payout: 
+                del payout["accountType"]
+            if "metadata" in payout: 
+                del payout["metadata"]
 
-        payload["data"].append(payout)
+            payload["data"].append(payout)
 
-    queue.put(payload)
+        if len(payload["data"]) > 0:
+            queue.put(payload)
+            new_latest_time = max(timestamps)
+        else:
+            new_latest_time = latest_time + dt.timedelta(minutes=15)
 
-    new_latest_time = max(timestamps)
-    new_latest_document = { "created": new_latest_time }
-    sleep_time = seconds_till_next_payout(new_latest_document)
-    time.sleep(sleep_time)
-
-    if force_stop():
-        return
-
-    run_monitor(options, queue, new_latest_document)
+        latest_time = new_latest_time
+        sleep_time = seconds_till_next_payout(new_latest_time)
+        time.sleep(sleep_time)
