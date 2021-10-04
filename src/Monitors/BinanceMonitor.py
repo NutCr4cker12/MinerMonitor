@@ -80,6 +80,20 @@ def fill_prices_since(start_time: dt, end_time: dt = None):
         next_sleep_time = 0.1
         price_request = get_btc_price(start_time=start_time, end_time=next_time, symbol=SYMBOL)
 
+        try:
+            json_loaded = json.loads(price_request.text)
+            if isinstance(json_loaded, list) and len(json_loaded) == 0:
+                return prices, next_time
+
+            df = pd.DataFrame(json_loaded)
+            _ = df["p"]
+        except Exception:
+            print("\n!!! BINANCE ERROR, NO 'P' IN RESPONSE !!!!")
+            print("Status code: ", price_request.status_code)
+            print("Request weight: ", request_weight(price_request))
+            print("Request response as json: ", price_request.text)
+            return prices, next_time
+
         if price_request.status_code == 429:
             next_sleep_time = 60 * 60 # 1 hour
             # Cant parse price (??)

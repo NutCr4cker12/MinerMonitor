@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from multiprocessing import Process, Queue
 
 def create_client(conn_string : str):
-    client = MongoClient(conn_string)
+    client = MongoClient(conn_string, tls=True, tlsAllowInvalidCertificates=True)
     db = client["foodpickerdb"]
     return db
 
@@ -25,6 +25,7 @@ def handle_posts(connection_string : str, queue: Queue):
             if source not in ["hwinfo", "binance", "nicehash"]:
                 raise Exception(f"Unkwnon source in payload: {str(payload)}")
 
+            # TODO Check for not posting duplicates! ...or just add timestamp as index.
             collection = db[source]
             if isinstance(data, dict):
                 collection.insert(data)

@@ -223,15 +223,16 @@ class HWiNFOEXE(Program):
         # Wait for the process to start
         self._click_run()
 
-    def wait_for_image(self, image_name : str, wait_time : float):
+    def wait_for_image(self, image_name : str, wait_time : float, **kwargs):
         # Wait for the process to start
         for _ in range(20):
-            x, y = get_image_position(image_name)
+            x, y = get_image_position(image_name, **kwargs)
             if x is not None and y is not None:
                 return (x, y)
-            time.sleep(wait_time)
+            time.sleep(wait_time / 20)
 
-        raise Exception(f"Wasn't able to find image position {image_name}")
+        return (None, None)
+        # raise Exception(f"Wasn't able to find image position {image_name}")
 
     def _click_run(self):
         orig_x, orig_y = pyautogui.position()
@@ -239,14 +240,23 @@ class HWiNFOEXE(Program):
         x, y = self.wait_for_image("settings.PNG", 0.5)
         pyautogui.click(x=x, y=y)
 
+        pyautogui.moveTo(100, 100)
         time.sleep(0.5)
-        x, y = get_image_position("shared_unchecked.PNG", thershold=0.95)
+
+        # This will detect both Checked AND unchecked
+        x, y = self.wait_for_image("shared_unchecked.PNG", 2, return_corner=True)
         is_unchecked = x is not None and y is not None
         if is_unchecked:
-            pyautogui.click(x=x, y=y)
+
+            # Ths will detect ONLY if it's unchecked
+            x2, y2 = self.wait_for_image("Unchecked.PNG", wait_time=0.1, bbox=(x, y, x + 25, y + 20))
+            if x2 is not None and y2 is not None:
+                pyautogui.click(x=x + 50, y=y + 10)
+
+            # This means that it's already checked -> no need to click
 
         time.sleep(0.5)
-        x, y = self.wait_for_image("ok.PNG", 0.1)
+        x, y = self.wait_for_image("ok.PNG", 1)
         pyautogui.click(x=x, y=y)
 
         x, y = self.wait_for_image("run.PNG", 0.5)
