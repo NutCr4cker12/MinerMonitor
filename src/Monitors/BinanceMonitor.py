@@ -1,3 +1,4 @@
+import logging
 import requests
 import json
 import pandas as pd
@@ -88,10 +89,10 @@ def fill_prices_since(start_time: dt, end_time: dt = None):
             df = pd.DataFrame(json_loaded)
             _ = df["p"]
         except Exception:
-            print("\n!!! BINANCE ERROR, NO 'P' IN RESPONSE !!!!")
-            print("Status code: ", price_request.status_code)
-            print("Request weight: ", request_weight(price_request))
-            print("Request response as json: ", price_request.text)
+            logging.info("\n!!! BINANCE ERROR, NO 'P' IN RESPONSE !!!!")
+            logging.info(f"Status code: {price_request.status_code}")
+            logging.info(f"Request weight: {request_weight(price_request)}")
+            logging.info(f"Request response as json: {price_request.text}")
             return prices, next_time
 
         if price_request.status_code == 429:

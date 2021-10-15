@@ -1,3 +1,4 @@
+import logging
 import cv2
 from PIL import ImageGrab
 import numpy as np
@@ -36,17 +37,17 @@ if __name__ == "__main__":
     # screen.show()
 
     x, y = get_image_position("shared_unchecked.PNG", return_corner=True)
-    print(x, y)
+    logging.info(f"{x}, {y}")
 
     if x is not None and y is not None:
         # Corner is found
         x2, y2 = get_image_position("Checked.PNG", thershold=0.8, bbox=(x, y, x + 25, y + 20))
-        print("FOUND CHECKED: ", x2, y2)
+        logging.info(f"FOUND CHECKED: {x2}, {y2}")
 
         x2, y2 = get_image_position("Unchecked.PNG", thershold=0.8, bbox=(x, y, x + 25, y + 20))
-        print("FOUND UNCHECKED: ", x2, y2)
+        logging.info(f"FOUND UNCHECKED: {x2}, {y2}")
     else:
-        print("SHARED UNCHECKED NOT FOUND !!!")
+        logging.info(f"SHARED UNCHECKED NOT FOUND !!!")
 
     # bbox = (x, y, x + 25, y + 20)
     # screeen = ImageGrab.grab(bbox=bbox)
@@ -56,8 +57,8 @@ if __name__ == "__main__":
 
     # template = cv2.imread("Checked.PNG", 0)
     
-    # print(img_rgb.shape)
-    # print("Template shape: ", template.shape)
+    # logging.info(img_rgb.shape)
+    # logging.info("Template shape: ", template.shape)
 
     # bbox = (x, y, x + 100, y + 20) # Just for test validation
     # screeen = ImageGrab.grab(bbox=bbox)

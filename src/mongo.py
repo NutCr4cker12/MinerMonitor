@@ -1,4 +1,4 @@
-
+import logging
 from pymongo import MongoClient
 from multiprocessing import Process, Queue
 
@@ -8,16 +8,16 @@ def create_client(conn_string : str):
     return db
 
 def handle_posts(connection_string : str, queue: Queue):
-    print("Starting mongo...")
+    logging.info("Starting mongo...")
     db = create_client(connection_string)
-    print("Mongo started")
-    print("Waiting for something to post....")
+    logging.info("Mongo started")
+    logging.info("Waiting for something to post....")
     
     while True:
         try:
             payload = queue.get()
 
-            # print("Got payload: ", json.dumps(payload, indent=2))
+            # logging.info("Got payload: ", json.dumps(payload, indent=2))
 
             source = payload["source"]
             data = payload["data"]
@@ -34,7 +34,7 @@ def handle_posts(connection_string : str, queue: Queue):
             else:
                 raise Exception(f"Unkwnon data format in payload: {str(data)}")
         except Exception as e:
-            print("Mongo post handler got exception: ", str(e))
+            logging.error(f"Mongo post handler got exception: {e}", exc_info=True)
 
 
 class Mongo:
@@ -52,10 +52,10 @@ class Mongo:
         self.proc.start()
 
     def stop(self):
-        print("Stopping mongo...")
+        logging.info("Stopping mongo...")
         self.proc.terminate()
         self.running = False
-        print("Mongo stopped")
+        logging.info("Mongo stopped")
 
     def post(self, payload):
         if not self.running:

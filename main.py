@@ -1,3 +1,4 @@
+import logging
 from Config import Config
 from src import (
     Program, HWiNFOEXE, HWiNFORemoteMonitor,        # Programs
@@ -9,6 +10,13 @@ from src.Monitors import (                          # Monitors
     run_hwinfo_monitor,
     run_nh_monitor, pre_run_nh,
     run_binance_monitor, pre_run_binance
+)
+
+# Init logger, only once!
+logging.basicConfig(
+    level=logging.INFO,
+    format=f"[%(asctime)s][%(name)s][%(levelname)s][%(process)d] - %(message)s",
+    datefmt="%y.%m.%d-%H:%M:%S"
 )
 
 
@@ -38,7 +46,7 @@ def run_gui(plugins, monitors):
 def clean_up(plugins, monitors):
     for p in plugins:
         for thread in p.timer_threads.values():
-            print(f"Stopping {p.name} thread")
+            logging.info(f"Stopping {p.name} thread")
             thread.cancel()
 
     for m in monitors:

@@ -1,3 +1,4 @@
+import logging
 from threading import Timer
 from PyQt5.QtWidgets import (
     QLabel,
@@ -32,7 +33,7 @@ class GuiPlugin:
         self.parent.layout.addWidget(self.status_label, self.row, 3)
 
     def update_status(self):
-        print(f"{self.name} - Updating status")
+        logging.info(f"{self.name} - Updating status")
         if self.plugin.running:
             self.status_label.setText("Running...")
             self.action_button.setText("Stop")
@@ -51,23 +52,23 @@ class GuiPlugin:
         self.update_status()
 
     def start(self):
-        print(f"{self.name} - starting...")
+        logging.info(f"{self.name} - starting...")
 
         self.runner = Timer(0.1, self.plugin.start)
         self.runner.start()
-        print(f"{self.name} - started")
+        logging.info(f"{self.name} - started")
         self.runner.join()
         # self.update_status()
 
     def stop(self):
-        print(f"{self.name} stopping...")
+        logging.info(f"{self.name} stopping...")
 
         self.plugin.stop()
 
         # self.running = False
         if self.runner is not None:
-            print(f"{self.name}: waiting for program to stop..")
+            logging.info(f"{self.name}: waiting for program to stop..")
             self.runner.join()
 
-        print(f"{self.name} stopped.")
+        logging.info(f"{self.name} stopped.")
         # self.update_status()

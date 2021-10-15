@@ -1,3 +1,4 @@
+import logging
 from multiprocessing import Process
 
 class MonitorRunner:
@@ -16,7 +17,7 @@ class MonitorRunner:
 
     def start(self):
         if self.running:
-            print(f"{self.options.name} monitor is already running!")
+            logging.info(f"{self.options.name} monitor is already running!")
             return
 
         pre_run_res = None
@@ -27,16 +28,16 @@ class MonitorRunner:
         # self.run_monitor(self.options, self.queue, pre_run_res)
         self.monitor_process = Process(target=self.run_monitor, args=(self.options, self.queue, pre_run_res, ))
         self.monitor_process.start()
-        print(f"{self.options.name} monitor started.")
+        logging.info(f"{self.options.name} monitor started.")
 
     def kill(self):
         if not self.running:
-            print(f"{self.options.name} monitor cannot be stop - it isn't running")
+            logging.info(f"{self.options.name} monitor cannot be stop - it isn't running")
             return
 
         self.running = False
         self.monitor_process.terminate()
         self.monitor_process.join()
         self.monitor_process = None
-        print(f"{self.options.name} monitor stopped.")
+        logging.info(f"{self.options.name} monitor stopped.")
         

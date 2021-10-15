@@ -18,7 +18,7 @@ def seconds_till_next_payout(timestamp:  dt) -> float:
         time_difference = next_assumed_payout - now
         time_diff_seconds = time_difference.total_seconds() + 30 * 60 # + 1/2 hour
     else:
-        time_diff_seconds = 4 * 60 * 60
+        time_diff_seconds = 0
     
     return time_diff_seconds
 
@@ -26,10 +26,9 @@ def run_monitor(options, queue, latest_document):
     api = create_api_client(options.api)
 
     posted_ids = [latest_document["id"]]
-
+    latest_time = latest_document["created"]
     while not force_stop():
         # Fill up the data up to date
-        latest_time = latest_document["created"]
 
         # If the monitor is started so that the latest time is already fetced, wait for next assumed payout
         would_sleep = seconds_till_next_payout(latest_time)
@@ -54,8 +53,8 @@ def run_monitor(options, queue, latest_document):
 
             if payout["id"] in posted_ids:
                 continue
-            else:
-                posted_ids.append(payout["id"])
+
+            posted_ids.append(payout["id"])
 
             payout["created"] = timestamp
             payout["currency"] = payout["currency"]["description"]
@@ -76,5 +75,3 @@ def run_monitor(options, queue, latest_document):
             new_latest_time = latest_time + dt.timedelta(hours=4)
 
         latest_time = new_latest_time
-        sleep_time = seconds_till_next_payout(new_latest_time)
-        time.sleep(sleep_time)

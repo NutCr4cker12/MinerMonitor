@@ -1,3 +1,4 @@
+import logging
 import subprocess
 import time
 import os
@@ -78,11 +79,11 @@ class Program:
             self._timed_thread(1, self._get_window, "get_window")
             return
 
-        print(f"{self.name}: canno't stop whats not running!")
+        logging.warn(f"{self.name}: canno't stop whats not running!")
 
     def set_foreground(self):
         if self._get_window() is None:
-            print(f"Cannot set {self.name} foreground - there's no window!")
+            logging.info(f"Cannot set {self.name} foreground - there's no window!")
             return
         self.window.set_foreground()
 
@@ -95,7 +96,7 @@ class Program:
 
         if "hwinfo" in self.name.lower() and self.window is not None:
             pid = self.window.pid()
-            print("HWINFOEXE started with pid: ", pid)
+            logging.info(f"HWINFOEXE started with pid: {pid}")
 
         self.answer_callback()
         return self.window
@@ -160,12 +161,12 @@ class HWiNFORemoteMonitor(Program):
                     break
         
         if hwinfo_enabled and web_server_running:
-            print(f"{self.name} started!")
+            logging.info(f"{self.name} started!")
             self.update_status()
             super()._timed_thread(1, self.listen_hwinfo_restart, "listen_hwinfo_restart")
             return
         
-        print(f"{self.name} failed to start due to error: {error_line}")
+        logging.info(f"{self.name} failed to start due to error: {error_line}")
         self.stop()
         time.sleep(5)
         self.start()
@@ -178,13 +179,13 @@ class HWiNFORemoteMonitor(Program):
                 pass
             else:
                 if "An error occured" in line:
-                    print(f"{self.name} detected error in remote monitor, restarting...")
+                    logging.info(f"{self.name} detected error in remote monitor, restarting...")
                     self.stop()
                     time.sleep(5)
                     self.start()
                     return
             time.sleep(2)
-        print(f"{self.name} hwinfo restart listener exited without noticing error")
+        logging.info(f"{self.name} hwinfo restart listener exited without noticing error")
     
 
     def stop(self):
@@ -271,24 +272,21 @@ class HWiNFOEXE(Program):
         if self._dont_restart():
             return
 
-        print(f"Restarting {self.name}")
+        logging.info(f"Restarting {self.name}")
         self.stop()
         time.sleep(2)
         
-        print(f"Starting {self.name}...")
+        logging.info(f"Starting {self.name}...")
         self.start()
 
     def stop(self):
         running, pids = check_running_process(self.windowTitle)
         if running:
-            for pid in pids:
-                print("HWINFO was acutally running with pid: ", pid)
-            
             if len(pids) == 1:
                 os.kill(pids[0], 9)
                 super()._timed_thread(1, self._get_window, "get_window")
         else:
-            print("Cant stop HWINFO, didn't find the pid!")
+            logging.warn("Cant stop HWINFO, didn't find the pid!")
 
     def _dont_restart(self):
         return force_stop()
@@ -298,19 +296,19 @@ if __name__ == "__main__":
     name = "msiafterburner"
     found, ps = check_running_process(name)
 
-    print("Tasks:")
+    logging.info("Tasks:")
     if not found:
-        print("No task found!")
+        logging.info("No task found!")
     else:
         for p in ps:
-            print(p)
+            logging.info(p)
 
-    print("---")
-    print("Windows:")
+    logging.info("---")
+    logging.info("Windows:")
     w = get_single_window(name)
     
     if w is None:
-        print("No windows found !!!")
+        logging.info("No windows found !!!")
     else:
-        print(w.title)
+        logging.info(w.title)
         w.set_foreground()

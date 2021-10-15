@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from src.Monitors import create_client
 from Config import Config
@@ -25,7 +26,7 @@ def get_active_hours(payouts, unpaid):
 
         # Filtering unpaid based on index is sufficient enough
         unpaid_filtered = list(filter(lambda x: x[0] > prev_timestamp and x[0] <= payout_time, unpaid_data))
-        print(len(unpaid_filtered))
+        logging.info(len(unpaid_filtered))
         payout["mining_start"] = unpaid_filtered[0][0]
         payout["mining_end"] = unpaid_filtered[-1][0]
 

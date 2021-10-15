@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 import uuid
 import hmac
@@ -18,7 +19,7 @@ class public_api:
             url += '?' + query
 
         if self.verbose:
-            print(method, url)
+            logging.info(f"{method}, {url}")
 
         s = requests.Session()
         if body:
@@ -128,7 +129,7 @@ class client:
             url += '?' + query
 
         if self.verbose:
-            print(method, url)
+            logging.info(f"{method}, {url}")
 
         if body:
             response = s.request(method, url, data=body_json)

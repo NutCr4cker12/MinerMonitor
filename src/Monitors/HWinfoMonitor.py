@@ -1,3 +1,4 @@
+import logging
 import requests
 import json
 import time
@@ -74,5 +75,5 @@ def get_data(data, sensors, gpus):
                     if not was_gpu:
                         data[s["saveAs"]].append(sensor_value)
     except Exception as e:
-        print("Exception in HWINFO monitoring: ", e)
+        logging.error(f"Exception in HWINFO monitoring: {e}", exc_info=True)
     return data

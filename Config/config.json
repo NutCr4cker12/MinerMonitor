@@ -53,13 +53,13 @@
         "binance": {
             "name": "Binance",
             "enabled": true,
-            "defaultEnabled": false,
+            "defaultEnabled": true,
             "interval": 0.0333
         },
         "hwinfo": {
             "name": "HWinfo",
             "enabled": true,
-            "defaultEnabled": false,
+            "defaultEnabled": true,
             "requiredProgram": "hwinfoExe",
             "cmd": "C:\\Programs\\HWiNFO64\\HWiNFO64.EXE",
             "monitorCmd": [

@@ -1,3 +1,4 @@
+import logging
 import ctypes
 import ctypes.wintypes
 import numpy as np
@@ -108,7 +109,7 @@ class Window(object):
     #     # TODO implement titlebar exclusing
     #     win32gui.SetForegroundWindow(self.pyHwnd)
     #     bbox = win32gui.GetWindowRect(self.pyHwnd)
-    #     # print(bbox)
+    #     # logging.info(bbox)
     #     region = {"top": bbox[0], "left": bbox[1], "width": bbox[2], "height": bbox[3]}
     #     img = np.array(mss.mss().grab(region))
     #     return np.array(img)
@@ -186,7 +187,7 @@ def get_windows():
                 GetWindowText(hwnd, buff, length + 1)
                 winds.append({"title": buff.value, "hwnd": hwnd})
             except Exception as e:
-                print("Eception in get_windows:", e)
+                logging.error(f"Eception in get_windows: {e}", exc_info=True)
         return True
     EnumWindows(EnumWindowsProc(foreach_window), 0)
 
@@ -206,7 +207,7 @@ def get_windows_by_name(name):
             if name in window["title"].lower():
                 winds.append(Window(window["hwnd"]))
         except Exception as e:
-            print("Exception in getting windows by name: ", e)
+            logging.error(f"Exception in getting windows by name: {e}", exc_info=True)
     return winds
 
 # UNUSED !
@@ -224,11 +225,11 @@ def get_window_by_pid(pid):
             if w.pid() == pid:
                 winds.append(w)
         except Exception as e:
-            print("Exception in getting windows by pid: ", e)
+            logging.error(f"Exception in getting windows by pid: {e}", exc_info=True)
     return winds
 
 
 if __name__ == "__main__":
     titles = get_windows_by_name("hwinfo64")
     for k in titles:
-        print(k.title, k.pid())
+        logging.info(f"{k.title}, {k.pid()}")
