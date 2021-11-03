@@ -84,61 +84,61 @@
                     "saveAs" : "CPUPower"
                 },
                 {
-                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
+                    "class" : "NVIDIA GeForce RTX 3090",
                     "name" : "GPU Temperature",
                     "saveAs" : "3090_GPUTemp"
                 },
                 {
-                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
+                    "class" : "NVIDIA GeForce RTX 3090",
                     "name" : "GPU Memory Junction Temperature",
                     "saveAs" : "3090_GPUMemJunctTemp"
                 },
                 {
-                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
+                    "class" : "NVIDIA GeForce RTX 3090",
                     "name" : "GPU Hot Spot Temperature",
                     "saveAs" : "3090_GPUHotSpotTemp"
                 },
                 {
-                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
+                    "class" : "NVIDIA GeForce RTX 3090",
                     "name" : "GPU Fan1",
                     "saveAs" : "3090_GPUFan1",
                     "unit": "%"
                 },
                 {
-                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
+                    "class" : "NVIDIA GeForce RTX 3090",
                     "name" : "GPU Fan2",
                     "saveAs" : "3090_GPUFan2",
                     "unit": "%"
                 },
                 {
-                    "class" : "GPU [#0]: NVIDIA GeForce RTX 3090",
+                    "class" : "NVIDIA GeForce RTX 3090",
                     "name" : "GPU Power",
                     "saveAs" : "3090_GPUPower"
                 },
                 {
-                    "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
+                    "class" : "NVIDIA GeForce RTX 2070",
                     "name" : "GPU Temperature",
                     "saveAs" : "2070_GPUTemp"
                 },
                 {
-                    "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
+                    "class" : "NVIDIA GeForce RTX 2070",
                     "name" : "GPU Hot Spot Temperature",
                     "saveAs" : "2070_GPUHotSpotTemp"
                 },
                 {
-                    "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
+                    "class" : "NVIDIA GeForce RTX 2070",
                     "name" : "GPU Fan1",
                     "saveAs" : "2070_GPUFan1",
                     "unit": "%"
                 },
                 {
-                    "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
+                    "class" : "NVIDIA GeForce RTX 2070",
                     "name" : "GPU Fan2",
                     "saveAs" : "2070_GPUFan2",
                     "unit": "%"
                 },
                 {
-                    "class" : "GPU [#1]: NVIDIA GeForce RTX 2070",
+                    "class" : "NVIDIA GeForce RTX 2070",
                     "name" : "GPU Power",
                     "saveAs" : "2070_GPUPower"
                 }

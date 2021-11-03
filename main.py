@@ -16,7 +16,7 @@ from src.Monitors import (                          # Monitors
 logging.basicConfig(
     level=logging.INFO,
     format=f"[%(asctime)s][%(name)s][%(levelname)s][%(process)d] - %(message)s",
-    datefmt="%y.%m.%d-%H:%M:%S"
+    datefmt="%d.%m.%y-%H:%M:%S"
 )
 
 
